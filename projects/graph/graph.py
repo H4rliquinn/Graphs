@@ -143,9 +143,23 @@ class Graph:
         starting_vertex to destination_vertex in
         depth-first order.
         """
-        pass  # TODO
+        s=Stack()
+        s.push([starting_vertex])
+        visited = set()
+        while s.size() > 0:
+            v = s.pop()
+            last_vertex=v[-1]
+            if last_vertex==destination_vertex:
+                return v
+            if last_vertex not in visited:
+                visited.add(last_vertex)
+                for neighbor in self.get_neighbors(last_vertex):
+                    new_path=v.copy()
+                    new_path.append(neighbor)
+                    s.push(new_path)
 
-    def dfs_recursive(self, starting_vertex, destination_vertex):
+
+    def dfs_recursive(self, starting_vertex, destination_vertex,visited=set()):
         """
         Return a list containing a path from
         starting_vertex to destination_vertex in
@@ -153,7 +167,11 @@ class Graph:
 
         This should be done using recursion.
         """
-        pass  # TODO
+        if starting_vertex not in visited:
+            visited.add(starting_vertex)
+            print("DFT_REC",starting_vertex)
+            for neighbor in self.get_neighbors(starting_vertex):
+                self.dft_recursive(neighbor,visited)
 
 if __name__ == '__main__':
     graph = Graph()  # Instantiate your graph
@@ -213,12 +231,12 @@ if __name__ == '__main__':
     # Valid BFS path:
     #     [1, 2, 4, 6]
     # '''
-    print(graph.bfs(1, 6))
+    print("BFS",graph.bfs(1, 6))
 
     # '''
     # Valid DFS paths:
     #     [1, 2, 4, 6]
     #     [1, 2, 4, 7, 6]
     # '''
-    # print(graph.dfs(1, 6))
-    # print(graph.dfs_recursive(1, 6))
+    print("DFS",graph.dfs(1, 6))
+    print("DFS_REC",graph.dfs_recursive(1, 6))
