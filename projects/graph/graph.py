@@ -112,18 +112,30 @@ class Graph:
         # Create an empty queue
         q=Queue()
         # Add A PATH TO the starting vertex_id to the queue
+        q.enqueue([starting_vertex])
         # Create an empty set to store visited nodes
+        visited = set()
         # While the queue is not empty...
+        while q.size() > 0:       
             # Dequeue, the first PATH
+            v = q.dequeue()
             # GRAB THE LAST VERTEX FROM THE PATH
+            last_vertex=v[-1]
             # CHECK IF IT'S THE TARGET
+            if last_vertex==destination_vertex:
                 # IF SO, RETURN THE PATH
+                return v
             # Check if it's been visited
+            if last_vertex not in visited:
             # If it has not been visited...
                 # Mark it as visited
+                visited.add(last_vertex)
                 # Then add A PATH TO all neighbors to the back of the queue
+                for neighbor in self.get_neighbors(last_vertex):
                     # (Make a copy of the path before adding)
-        pass  # TODO
+                    new_path=v.copy()
+                    new_path.append(neighbor)
+                    q.enqueue(new_path)
 
     def dfs(self, starting_vertex, destination_vertex):
         """
@@ -201,7 +213,7 @@ if __name__ == '__main__':
     # Valid BFS path:
     #     [1, 2, 4, 6]
     # '''
-    # print(graph.bfs(1, 6))
+    print(graph.bfs(1, 6))
 
     # '''
     # Valid DFS paths:
