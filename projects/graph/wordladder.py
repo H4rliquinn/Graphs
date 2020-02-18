@@ -26,7 +26,7 @@
 # undirected, cyclic, sparse
 # nodes are words, edges/neighbors are words that differ by one and only one letter
 from util import Stack, Queue  # These may come in handy
-
+import string
 
 
 f = open('words.txt', 'r')
@@ -35,7 +35,7 @@ f.close()
 
 word_set = set([w.lower() for w in words])
 
-print(word_set)
+# print(word_set)
 print(len(word_set))
 
 
@@ -47,7 +47,8 @@ def get_neighbors(w):
     '''
     neighbors = []
     # For each letter in the word
-    alphabet = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
+    # alphabet = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
+    alphabet=list(string.ascii_lowercase)
     letter_list = list(w)
     for i in range(len(letter_list)):
         # For each letter in the alphabet
