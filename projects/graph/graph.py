@@ -175,7 +175,6 @@ class Graph:
                 retVal=self.dfs_recursive(neighbor,destination_vertex,visited,retVal)
                 if destination_vertex in retVal:
                     return [starting_vertex]+retVal
-        return retVal
 
                 
 
