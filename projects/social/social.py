@@ -6,6 +6,19 @@ class User:
     def __repr__(self):
         return self.name
 
+class Queue():
+    def __init__(self):
+        self.queue = []
+    def enqueue(self, value):
+        self.queue.append(value)
+    def dequeue(self):
+        if self.size() > 0:
+            return self.queue.pop(0)
+        else:
+            return None
+    def size(self):
+        return len(self.queue)
+
 class SocialGraph:
     def __init__(self):
         self.last_id = 0
@@ -62,9 +75,9 @@ class SocialGraph:
 
         # Shuffle the list
         random.shuffle(possible_friendships)
-        print("----")
-        print(possible_friendships)
-        print("----")
+        # print("----")
+        # print(possible_friendships)
+        # print("----")
         # Grab the first N pairs from the list and create those friendships
         for i in range(num_users * avg_friendships // 2):
             friendship = possible_friendships[i]
@@ -84,15 +97,31 @@ class SocialGraph:
 
         The key is the friend's ID and the value is the path.
         """
-        visited = {}  # Note that this is a dictionary, not a set
-        # !!!! IMPLEMENT ME
+        visited = {}
+        q=Queue()
+        q.enqueue([user_id])
+        while q.size()>0:
+            curr=q.dequeue()
+            print("Q",curr)
+            if not visited.get(curr[-1],None):
+                visited[curr[-1]]=curr
+
+            for nxt in self.friendships[curr[-1]]:
+                if nxt not in visited:
+                    new_q=curr.copy()
+                    new_q.append(nxt)
+                    q.enqueue(new_q)
+
         return visited
 
 
 if __name__ == '__main__':
     sg = SocialGraph()
     sg.populate_graph(10, 2)
-    print(sg.users)
-    print(sg.friendships)
-    # connections = sg.get_all_social_paths(1)
-    # print(connections)
+    connections = sg.get_all_social_paths(1)
+    print("USERS",sg.users)
+    print("------------")
+    print("FRIENDSHIPS",sg.friendships)
+    print("------------")
+    print("CONNECTIONS",connections)
+    print("------------")
