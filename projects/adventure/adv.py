@@ -18,6 +18,9 @@ class Stack():
     def size(self):
         return len(self.stack)
 
+def oracle(odir):
+    pass
+
 # Load world
 world = World()
 
@@ -40,14 +43,10 @@ player = Player(world.starting_room)
 
 # Fill this out with directions to walk
 # traversal_path = ['n', 'n']
-# traversal_path = ['n','n','s','s','s','s','n','n','w','w','e','e','e','e'] Cross.
+
 traversal_path = []
 #Create visited
 visited=set()
-# player.current_room.id
-# player.current_room.get_exits()
-# player.travel(direction)
-# get_room_in_direction(direction)
 
 # Create Queue
 s=Stack()
@@ -67,6 +66,8 @@ while s.size()>0:
     last_direction=curr_room[1]
     #Add to visited
     visited.add(player.current_room.id)
+    if len(visited)==500:
+        break
     if last_direction !='x':
         #Queue explored reverse direction
         if not_explored:
@@ -74,8 +75,8 @@ while s.size()>0:
         #move
         player.travel(last_direction)
         traversal_path.append(last_direction)
-        print("T_PATH",traversal_path)
-        print("VISITED",visited)
+        # print("T_PATH",traversal_path)
+        # print("VISITED",visited)
     if not_explored:
         #Get exits
         next_directions=player.current_room.get_exits()
@@ -85,9 +86,10 @@ while s.size()>0:
         if last_direction !='x':
             next_directions.remove(reverse_dirs[last_direction])
             #If not previous room Add to stack // And not visited?
+            oracle(next_directions)
         for dir in next_directions:
-            print()
             if player.current_room.get_room_in_direction(dir).id not in visited:
+                # print(player.current_room.id)
                 s.push((True,dir))
 
 
