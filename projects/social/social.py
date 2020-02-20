@@ -75,10 +75,6 @@ class SocialGraph:
 
         # Shuffle the list
         random.shuffle(possible_friendships)
-        # print("----")
-        # print(possible_friendships)
-        # print("----")
-        # Grab the first N pairs from the list and create those friendships
         for i in range(num_users * avg_friendships // 2):
             friendship = possible_friendships[i]
             self.add_friendship(friendship[0], friendship[1])
@@ -102,7 +98,6 @@ class SocialGraph:
         q.enqueue([user_id])
         while q.size()>0:
             curr=q.dequeue()
-            print("Q",curr)
             if not visited.get(curr[-1],None):
                 visited[curr[-1]]=curr
 
@@ -119,9 +114,14 @@ if __name__ == '__main__':
     sg = SocialGraph()
     sg.populate_graph(10, 2)
     connections = sg.get_all_social_paths(1)
-    print("USERS",sg.users)
-    print("------------")
+    # print("USERS",sg.users)
+    # print("------------")
     print("FRIENDSHIPS",sg.friendships)
     print("------------")
     print("CONNECTIONS",connections)
     print("------------")
+    print("Friend Count: ", len(connections))
+    sum_connections=0
+    for x in connections:
+        sum_connections+=len(connections[x])
+    print(f"In {len(connections)} connections, avg degree of separation is: {round(sum_connections/len(connections),2)}")
