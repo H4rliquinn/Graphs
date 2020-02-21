@@ -1,103 +1,141 @@
 from room import Room
 from player import Player
 from world import World
-
+from util import Stack, Queue
 import random
 from ast import literal_eval
 
-class Stack():
-    def __init__(self):
-        self.stack = []
-    def push(self, value):
-        self.stack.append(value)
-    def pop(self):
-        if self.size() > 0:
-            return self.stack.pop()
-        else:
-            return None
-    def size(self):
-        return len(self.stack)
 
 # Load world
 world = World()
 
 # You may uncomment the smaller graphs for development and testing purposes.
-map_file = "maps/test_line.txt"
-# map_file = "maps/test_cross.txt"
+# map_file = "maps/test_line.txt"
+map_file = "maps/test_cross.txt"
 # map_file = "maps/test_loop.txt"
 # map_file = "maps/test_loop_fork.txt"
 # map_file = "maps/main_maze.txt"
 # map_file = "maps/mike.txt"
 
 # Loads the map into a dictionary
-room_graph=literal_eval(open(map_file, "r").read())
+room_graph = literal_eval(open(map_file, "r").read())
 world.load_graph(room_graph)
-
 # Print an ASCII map
 world.print_rooms()
-
 player = Player(world.starting_room)
 
-# Fill this out with directions to walk
 # traversal_path = ['n', 'n']
 
 traversal_path = []
-
-# {
-#   0: {'n': '?', 's': '?', 'w': '?', 'e': '?'}
-# }
-#Create visited
-visited=set()
+s = Stack()
+q = Queue()
+map = {
+  0: {'n': '?', 's': '?', 'w': '?', 'e': '?'}
+}
+# Create visited
+visited = set()
+# Create oposites list
+reverse_dirs = {"n": "s", "s": "n", "e": "w", "w": "e", 'x': 'x'}
 
     # player.current_room.id
     # player.current_room.get_exits()
     # player.travel(direction)
     # get_room_in_direction(self, direction)
-# add current tuple to queue
 
 
-# while not empty
-while s.size()>0:
-    # print("Stack",s.stack)
-    #pop current
-    curr_room=s.pop()
-    #get Not_Explored
-    not_explored=curr_room[0]
-    #get dirction
-    last_direction=curr_room[1]
-    #Add to visited
+def find_walls():
+    walls = {'n', 's', 'w', 'e'}-set(player.current_room.get_exits())
+    # print("WALLS",walls)
+    for x in walls:
+        map[player.current_room.id][x] = 'X'
+
+
+def update_records(last_direction):
+    # add to map
+    map[player.current_room.id][last_direction] = player.current_room.get_room_in_direction(
+        last_direction).id
+    find_walls()
+    player.travel(last_direction)
+    map[player.current_room.id] = {'n': '?', 's': '?', 'w': '?', 'e': '?'}
+    find_walls()
+    map[player.current_room.id][reverse_dirs[last_direction]
+        ] = player.current_room.get_room_in_direction(reverse_dirs[last_direction]).id
+    # add to path
+    traversal_path.append(last_direction)
+
+
+def find_new_room():
+    recents = set()
+    q.enqueue((player.current_room.id, []))
+    while q.size() > 0:
+        curr = q.dequeue()
+        curr_room = map[curr[0]]
+        direction = curr[1]
+        # print("CURR",curr_room,direction)
+        for x in curr_room:
+            if curr_room[x] != 'X':
+                if curr_room[x] == '?':
+                    # print("FOUND",direction,x)
+                    # direction.append(x)
+                    return direction
+                elif direction==[] or x !=reverse_dirs[direction[-1]]:
+                    new_direction=list(direction)
+                    new_direction.append(x)
+                    q.enqueue((curr_room[x],new_direction))
+
+
+last_direction='x'
+while True:
+    # Add to visited
     visited.add(player.current_room.id)
-    if len(visited)==500:
+    if len(visited)==9:
         break
-    if last_direction !='x':
-        #move
-        player.travel(last_direction)
-        traversal_path.append(last_direction)
-        #Queue explored reverse direction
-        if not_explored:
-            s.push((False,reverse_dirs[last_direction],player.current_room.id))
-        # print("T_PATH",traversal_path)
-        # print("VISITED",visited)
-    if not_explored:
-        #Get exits
-        next_directions=player.current_room.get_exits()
-        # print("NXT DIR",next_directions)
-        #remove previous direction
-        # print("LAST",last_direction,next_directions)
-        if last_direction !='x':
-            next_directions.remove(reverse_dirs[last_direction])
-            #If not previous room Add to stack // And not visited?
-        if len(next_directions)>3:
-            next_directions=['e','w','n','s']
-        elif len(next_directions)>1:
-            crystal_ball=oracle(next_directions)
-            next_directions=[]
-            for crack in crystal_ball:
-                next_directions.append(crack[1])
-        for dir in next_directions:
-            if player.current_room.get_room_in_direction(dir).id not in visited:
-                # print(player.current_room.id)
-                s.push((True,dir,player.current_room.id))
+    # Get exits
+    next_directions=player.current_room.get_exits()
+    # Continue straight if possible
+    if last_direction in next_directions and player.current_room.get_room_in_direction(last_direction).id not in visited:
+        update_records(last_direction)
+    else:
+        # Otherwise turn or reorient
+        for x in next_directions:
+            if map[player.current_room.id][x]!='?':
+                next_directions.remove(x)
+        if len(next_directions)>0:
+            last_direction=random.sample(next_directions,1)[0]
+            update_records(last_direction)
+        else:
+            # re-orient
+            gotit=find_new_room()
+            print("GOTIT",gotit)
+            for i in gotit:
+                update_records(i)
+                last_direction=i
+            # break
+
+    # Queue explored reverse direction
+print("T_PATH",traversal_path)
+print("MAP",map)
+
+    # # print("VISITED",visited)
+    # if not_explored:
+
+    #     # print("NXT DIR",next_directions)
+    #     #remove previous direction
+    #     # print("LAST",last_direction,next_directions)
+    #     if last_direction !='x':
+    #         next_directions.remove(reverse_dirs[last_direction])
+    #         #If not previous room Add to stack // And not visited?
+    #     if len(next_directions)>3:
+    #         next_directions=['e','w','n','s']
+    #     elif len(next_directions)>1:
+    #         crystal_ball=oracle(next_directions)
+    #         next_directions=[]
+    #         for crack in crystal_ball:
+    #             next_directions.append(crack[1])
+    #     for dir in next_directions:
+    #         if player.current_room.get_room_in_direction(dir).id not in visited:
+    #             # print(player.current_room.id)
+    #             s.push((True,dir,player.current_room.id))
             # else:
             #     print("VISITS",dir,player.current_room.get_room_in_direction(dir).id,s.stack)
 
