@@ -129,7 +129,9 @@ while s.size()>0:
         if last_direction !='x':
             next_directions.remove(reverse_dirs[last_direction])
             #If not previous room Add to stack // And not visited?
-        if len(next_directions)>1:
+        if len(next_directions)>3:
+            next_directions=['e','w','n','s']
+        elif len(next_directions)>1:
             crystal_ball=oracle(next_directions)
             next_directions=[]
             for crack in crystal_ball:
@@ -138,7 +140,7 @@ while s.size()>0:
             if player.current_room.get_room_in_direction(dir).id not in visited:
                 # print(player.current_room.id)
                 s.push((True,dir,player.current_room.id))
-            # # else:
+            # else:
             #     print("VISITS",dir,player.current_room.get_room_in_direction(dir).id,s.stack)
 
 
