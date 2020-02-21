@@ -12,9 +12,9 @@ world = World()
 # You may uncomment the smaller graphs for development and testing purposes.
 # map_file = "maps/test_line.txt"
 # map_file = "maps/test_cross.txt"
-map_file = "maps/test_loop.txt"
+# map_file = "maps/test_loop.txt"
 # map_file = "maps/test_loop_fork.txt"
-# map_file = "maps/main_maze.txt"
+map_file = "maps/main_maze.txt"
 # map_file = "maps/mike.txt"
 
 # Loads the map into a dictionary
@@ -48,15 +48,25 @@ def find_walls():
     for x in walls:
         map[player.current_room.id][x] = 'X'
 
+def find_explored():
+    dirs=player.current_room.get_exits()
+    print("EXITS",dirs)
+    for x in dirs:
+        nxt_rm=player.current_room.get_room_in_direction(x).id
+        nxt_map=map.get(nxt_rm,None)
+        if nxt_map:
+            map[player.current_room.id][x]=player.current_room.get_room_in_direction(x).id
 
 def update_records(last_direction):
     # add to map
     map[player.current_room.id][last_direction] = player.current_room.get_room_in_direction(
         last_direction).id
     find_walls()
+    find_explored()
     player.travel(last_direction)
     map[player.current_room.id] = {'n': '?', 's': '?', 'w': '?', 'e': '?'}
     find_walls()
+    find_explored()
     map[player.current_room.id][reverse_dirs[last_direction]
         ] = player.current_room.get_room_in_direction(reverse_dirs[last_direction]).id
     # add to path
@@ -102,27 +112,27 @@ while True:
     else:
         # Otherwise turn or reorient
         for x in next_directions:
-            print("ROOMVIS",map[player.current_room.id],player.current_room.get_room_in_direction(x).id)
+            # print("ROOMVIS",map[player.current_room.id],player.current_room.get_room_in_direction(x).id)
             if player.current_room.get_room_in_direction(x).id in visited:
                 map[player.current_room.id][x]=player.current_room.get_room_in_direction(x).id
             if map[player.current_room.id][x]!='?':
                     next_directions.remove(x)
-            print("NXTDIR",next_directions)
+            # print("NXTDIR",next_directions)
         if len(next_directions)>0:
             last_direction=random.sample(next_directions,1)[0]
             update_records(last_direction)
         else:
             # re-orient
             gotit=find_new_room(player.current_room.id)
-            print("GOTIT",gotit,player.current_room.id)
+            # print("GOTIT",gotit,player.current_room.id)
             for i in gotit:
                 update_records(i)
                 last_direction='x'
             # break
 
     # Queue explored reverse direction
-    print("T_PATH",traversal_path)
-    print("MAP",map)
+print("T_PATH",traversal_path)
+print("MAP",map)
 print({*world.rooms.keys()} - {r for r in visited})
     # # print("VISITED",visited)
     # if not_explored:
