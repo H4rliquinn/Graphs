@@ -64,10 +64,6 @@ def clear_smoke(unordered):
     return unordered
 
 def oracle(directions):
-    # player.current_room.id
-    # player.current_room.get_exits()
-    # player.travel(direction)
-    # get_room_in_direction(self, direction)
     retVal=[]
     player2 = Player(player.current_room)
     for last_dir in directions:
@@ -91,16 +87,13 @@ def oracle(directions):
             else:
                 break
     clear_smoke(retVal)
-    # print("CRYSTAL BALL",retVal) 
     return retVal
-
 
 # add current tuple to queue
 s.push((True,'x',0))
 
 # while not empty
 while s.size()>0:
-    # print("Stack",s.stack)
     #pop current
     curr_room=s.pop()
     #get Not_Explored
@@ -118,14 +111,10 @@ while s.size()>0:
         #Queue explored reverse direction
         if not_explored:
             s.push((False,reverse_dirs[last_direction],player.current_room.id))
-        # print("T_PATH",traversal_path)
-        # print("VISITED",visited)
     if not_explored:
         #Get exits
         next_directions=player.current_room.get_exits()
-        # print("NXT DIR",next_directions)
         #remove previous direction
-        # print("LAST",last_direction,next_directions)
         if last_direction !='x':
             next_directions.remove(reverse_dirs[last_direction])
             #If not previous room Add to stack // And not visited?
@@ -138,10 +127,7 @@ while s.size()>0:
                 next_directions.append(crack[1])
         for dir in next_directions:
             if player.current_room.get_room_in_direction(dir).id not in visited:
-                # print(player.current_room.id)
                 s.push((True,dir,player.current_room.id))
-            # else:
-            #     print("VISITS",dir,player.current_room.get_room_in_direction(dir).id,s.stack)
 
 
 

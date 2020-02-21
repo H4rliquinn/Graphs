@@ -22,11 +22,11 @@ class Stack():
 world = World()
 
 # You may uncomment the smaller graphs for development and testing purposes.
-# map_file = "maps/test_line.txt"
+map_file = "maps/test_line.txt"
 # map_file = "maps/test_cross.txt"
 # map_file = "maps/test_loop.txt"
 # map_file = "maps/test_loop_fork.txt"
-map_file = "maps/main_maze.txt"
+# map_file = "maps/main_maze.txt"
 # map_file = "maps/mike.txt"
 
 # Loads the map into a dictionary
@@ -42,61 +42,19 @@ player = Player(world.starting_room)
 # traversal_path = ['n', 'n']
 
 traversal_path = []
+
+# {
+#   0: {'n': '?', 's': '?', 'w': '?', 'e': '?'}
+# }
 #Create visited
 visited=set()
 
-# Create Queue
-s=Stack()
-#Create oposites list
-reverse_dirs = {"n": "s", "s": "n", "e": "w", "w": "e"}
-
-def clear_smoke(unordered):
-    while True:
-        flag=False
-        for i in range(len(unordered)-1):
-            if unordered[i]<unordered[i+1]:
-                unordered[i],unordered[i+1]=unordered[i+1],unordered[i]
-                flag=True
-        if flag:
-            flag=False
-        else:
-            break
-    return unordered
-
-def oracle(directions):
     # player.current_room.id
     # player.current_room.get_exits()
     # player.travel(direction)
     # get_room_in_direction(self, direction)
-    retVal=[]
-    player2 = Player(player.current_room)
-    for last_dir in directions:
-        counter=0
-        current_dir=last_dir
-        player2.current_room=player.current_room
-        while True:
-            if player2.current_room.get_room_in_direction(current_dir).id not in visited:
-                player2.travel(current_dir)
-                counter+=1
-                next_steps=player2.current_room.get_exits()
-                next_steps.remove(reverse_dirs[current_dir])
-                if len(next_steps)==1:
-                    current_dir=next_steps[0]
-                elif len(next_steps)==0:
-                    retVal.append((counter,last_dir))
-                    break
-                else:
-                    retVal.append((counter+100,last_dir))
-                    break
-            else:
-                break
-    clear_smoke(retVal)
-    # print("CRYSTAL BALL",retVal) 
-    return retVal
-
-
 # add current tuple to queue
-s.push((True,'x',0))
+
 
 # while not empty
 while s.size()>0:
