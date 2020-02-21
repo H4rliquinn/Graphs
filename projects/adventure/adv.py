@@ -18,12 +18,8 @@ class Stack():
     def size(self):
         return len(self.stack)
 
-def oracle(odir):
-    pass
-
 # Load world
 world = World()
-
 
 # You may uncomment the smaller graphs for development and testing purposes.
 # map_file = "maps/test_line.txt"
@@ -31,6 +27,7 @@ world = World()
 # map_file = "maps/test_loop.txt"
 # map_file = "maps/test_loop_fork.txt"
 map_file = "maps/main_maze.txt"
+# map_file = "maps/mike.txt"
 
 # Loads the map into a dictionary
 room_graph=literal_eval(open(map_file, "r").read())
@@ -52,8 +49,54 @@ visited=set()
 s=Stack()
 #Create oposites list
 reverse_dirs = {"n": "s", "s": "n", "e": "w", "w": "e"}
+
+def clear_smoke(unordered):
+    while True:
+        flag=False
+        for i in range(len(unordered)-1):
+            if unordered[i]<unordered[i+1]:
+                unordered[i],unordered[i+1]=unordered[i+1],unordered[i]
+                flag=True
+        if flag:
+            flag=False
+        else:
+            break
+    return unordered
+
+def oracle(directions):
+    # player.current_room.id
+    # player.current_room.get_exits()
+    # player.travel(direction)
+    # get_room_in_direction(self, direction)
+    retVal=[]
+    player2 = Player(player.current_room)
+    for last_dir in directions:
+        counter=0
+        current_dir=last_dir
+        player2.current_room=player.current_room
+        while True:
+            if player2.current_room.get_room_in_direction(current_dir).id not in visited:
+                player2.travel(current_dir)
+                counter+=1
+                next_steps=player2.current_room.get_exits()
+                next_steps.remove(reverse_dirs[current_dir])
+                if len(next_steps)==1:
+                    current_dir=next_steps[0]
+                elif len(next_steps)==0:
+                    retVal.append((counter,last_dir))
+                    break
+                else:
+                    retVal.append((counter+100,last_dir))
+                    break
+            else:
+                break
+    clear_smoke(retVal)
+    # print("CRYSTAL BALL",retVal) 
+    return retVal
+
+
 # add current tuple to queue
-s.push((True,'x'))
+s.push((True,'x',0))
 
 # while not empty
 while s.size()>0:
@@ -69,12 +112,12 @@ while s.size()>0:
     if len(visited)==500:
         break
     if last_direction !='x':
-        #Queue explored reverse direction
-        if not_explored:
-            s.push((False,reverse_dirs[last_direction]))
         #move
         player.travel(last_direction)
         traversal_path.append(last_direction)
+        #Queue explored reverse direction
+        if not_explored:
+            s.push((False,reverse_dirs[last_direction],player.current_room.id))
         # print("T_PATH",traversal_path)
         # print("VISITED",visited)
     if not_explored:
@@ -86,14 +129,17 @@ while s.size()>0:
         if last_direction !='x':
             next_directions.remove(reverse_dirs[last_direction])
             #If not previous room Add to stack // And not visited?
-            oracle(next_directions)
+        if len(next_directions)>1:
+            crystal_ball=oracle(next_directions)
+            next_directions=[]
+            for crack in crystal_ball:
+                next_directions.append(crack[1])
         for dir in next_directions:
             if player.current_room.get_room_in_direction(dir).id not in visited:
                 # print(player.current_room.id)
-                s.push((True,dir))
-
-
-
+                s.push((True,dir,player.current_room.id))
+            # # else:
+            #     print("VISITS",dir,player.current_room.get_room_in_direction(dir).id,s.stack)
 
 
 
