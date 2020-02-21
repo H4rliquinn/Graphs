@@ -50,7 +50,7 @@ def find_walls():
 
 def find_explored():
     dirs=player.current_room.get_exits()
-    print("EXITS",dirs)
+    # print("EXITS",dirs)
     for x in dirs:
         nxt_rm=player.current_room.get_room_in_direction(x).id
         nxt_map=map.get(nxt_rm,None)
@@ -81,15 +81,15 @@ def find_new_room(passed_id):
         curr = q.dequeue()
         curr_room = map[curr[0]]
         direction = curr[1]
-        print("CURR",curr_room,direction,curr[0])
+        # print("CURR",curr_room,direction,curr[0])
         for x in curr_room:
             if curr_room[x] != 'X':
                 if curr_room[x] == '?':
-                    print("FOUND",direction,x)
+                    # print("FOUND",direction,x)
                     # direction.append(x)
                     return direction
                 elif direction==[] or x !=reverse_dirs[direction[-1]]:
-                    print("NOTFOUND",direction,x)
+                    # print("NOTFOUND",direction,x)
                     new_direction=list(direction)
                     new_direction.append(x)
                     q.enqueue((curr_room[x],new_direction))
@@ -131,8 +131,8 @@ while True:
             # break
 
     # Queue explored reverse direction
-print("T_PATH",traversal_path)
-print("MAP",map)
+# print("T_PATH",traversal_path)
+# print("MAP",map)
 print({*world.rooms.keys()} - {r for r in visited})
     # # print("VISITED",visited)
     # if not_explored:
