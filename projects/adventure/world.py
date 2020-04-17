@@ -41,7 +41,7 @@ class World:
         for i in range(len(self.room_grid)):
             for j in range(len(self.room_grid[0])):
                 rotated_room_grid[len(self.room_grid[0]) - j - 1][i] = self.room_grid[i][j]
-        print("#####")
+        print("#"+"#####"*len(self.room_grid)+"#")
         str = ""
         for row in rotated_room_grid:
             all_null = True
@@ -83,7 +83,7 @@ class World:
                 else:
                     str += "     "
             str += "#\n"
-        print(str)
-        print("#####")
+        print(str[:-1])
+        print("#"+"#####"*len(self.room_grid)+"#")
 
 
